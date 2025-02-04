@@ -27,14 +27,12 @@ function removerNome(index) {
 function limparLista() {
     nomes = [];
     atualizarLista();
-
-    // Agora também limpa os resultados sorteados
-    document.getElementById("resultado").innerHTML = '';
+    document.getElementById("resultado").innerHTML = ''; // Limpa o resultado do sorteio
 }
 
 function atualizarLista() {
     const lista = document.getElementById("listaNomes");
-    lista.innerHTML = ''; // Limpar a lista
+    lista.innerHTML = '';
 
     nomes.forEach((nome, index) => {
         const li = document.createElement("li");
@@ -49,17 +47,35 @@ function sortearAmigos() {
         return;
     }
 
-    // Criar uma cópia dos nomes para fazer o sorteio
-    const amigosSecretos = [...nomes];
-    const pares = [];
+    let amigosSecretos = [...nomes];
 
-    // Criar pares de forma cíclica
-    for (let i = 0; i < amigosSecretos.length; i++) {
-        const amigo = amigosSecretos[i];
-        const proximoAmigo = amigosSecretos[(i + 1) % amigosSecretos.length]; // O último será par do primeiro
-        pares.push(`O amigo secreto de ${amigo} é ${proximoAmigo}`);
+    // Embaralhar os nomes aleatoriamente usando Fisher-Yates Shuffle
+    for (let i = amigosSecretos.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [amigosSecretos[i], amigosSecretos[j]] = [amigosSecretos[j], amigosSecretos[i]];
     }
 
-    const resultado = document.getElementById("resultado");
-    resultado.innerHTML = '<h2>Amigos Secretos Sorteados:</h2>' + pares.join('<br>');
+    // Garantir que ninguém tire a si mesmo
+    let invalido = false;
+    for (let i = 0; i < amigosSecretos.length; i++) {
+        if (amigosSecretos[i] === nomes[i]) {
+            invalido = true;
+            break;
+        }
+    }
+
+    // Se houver um nome igual na mesma posição, refazer o sorteio
+    if (invalido) {
+        return sortearAmigos();
+    }
+
+    // Criar os pares sorteados
+    const pares = [];
+    for (let i = 0; i < amigosSecretos.length; i++) {
+        const amigo = nomes[i];
+        const amigoSecreto = amigosSecretos[i];
+        pares.push(`O amigo secreto de ${amigo} é ${amigoSecreto}`);
+    }
+
+    document.getElementById("resultado").innerHTML = '<h2>Amigos Secretos Sorteados:</h2>' + pares.join('<br>');
 }
