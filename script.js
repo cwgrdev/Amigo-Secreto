@@ -27,6 +27,9 @@ function removerNome(index) {
 function limparLista() {
     nomes = [];
     atualizarLista();
+
+    // Agora também limpa os resultados sorteados
+    document.getElementById("resultado").innerHTML = '';
 }
 
 function atualizarLista() {
